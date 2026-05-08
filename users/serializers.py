@@ -12,9 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     def get_avatar_url(self, obj):
         if obj.avatar:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.avatar.url)
+            return 'http://localhost:8000/media/' + obj.avatar.name
         return None
 
 

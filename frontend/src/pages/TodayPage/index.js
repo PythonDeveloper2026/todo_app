@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useTodo } from '../../context/TodoContext';
 import TaskCard from '../../components/TaskCard';
+import TaskDetailModal from '../../components/TaskDetailModal';
 import { FiPlus } from 'react-icons/fi';
+import './styles.css';
 
 const TodayPage = ({ title = "Today", type = "today" }) => {
   const { tasks, fetchTasks, createTask, loading } = useTodo();
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isNewTask, setIsNewTask] = useState(false);
 
   useEffect(() => {
-    // Backend API doesn't have a direct /tasks/ endpoint with type filter in this implementation,
-    // wait, we defined /tasks/today/, /tasks/my-day/, /tasks/important/, /tasks/upcoming/
-    // Let's use fetchTasks but we need to override the URL.
-    // Actually, we can fetch all tasks and filter locally, or adjust context to support it.
-    // In TodoContext, fetchTasks uses /tasks/. Let's just fetch all tasks and filter here for simplicity.
     fetchTasks();
   }, [fetchTasks]);
 
@@ -30,11 +29,22 @@ const TodayPage = ({ title = "Today", type = "today" }) => {
     setNewTaskTitle('');
   };
 
+  const handleOpenNewTask = () => {
+    setSelectedTask({ 
+      title: newTaskTitle, 
+      description: '', 
+      priority: 1,
+      is_my_day: type === 'my-day',
+      is_important: type === 'important',
+    });
+    setIsNewTask(true);
+  };
+
   const filteredTasks = tasks.filter(task => {
     if (type === 'my-day') return task.is_my_day;
     if (type === 'important') return task.is_important;
     if (type === 'upcoming') return task.due_date && new Date(task.due_date) > new Date();
-    // Default today
+    if (type === 'today') return task.due_date && new Date(task.due_date).toDateString() === new Date().toDateString();
     return true; 
   });
 
@@ -46,23 +56,50 @@ const TodayPage = ({ title = "Today", type = "today" }) => {
       </div>
 
       <div className="tasks-list">
-        {loading ? <p>Loading...</p> : filteredTasks.map(task => (
-          <TaskCard key={task.id} task={task} />
+        {loading ? <p>Loading...</p> : filteredTasks.length === 0 ? (
+          <div className="empty-state">
+            <p>No tasks here yet.</p>
+            <p className="text-secondary">Add a task below to get started.</p>
+          </div>
+        ) : filteredTasks.map(task => (
+          <TaskCard key={task.id} task={task} onClick={setSelectedTask} />
         ))}
       </div>
 
       <form onSubmit={handleAddTask} className="add-task-form">
         <div className="input-wrapper">
-          <FiPlus className="input-icon" />
           <input
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
-            placeholder="Add a task..."
+            placeholder={`Add a task to ${title.toLowerCase()}...`}
             className="input-field"
           />
+          <button 
+            type="button" 
+            className="create-btn"
+            onClick={handleOpenNewTask}
+            title="Create with full details"
+          >
+            <FiPlus />
+          </button>
         </div>
       </form>
+
+      {selectedTask && (
+        <TaskDetailModal 
+          task={selectedTask} 
+          onClose={() => {
+            setSelectedTask(null);
+            setIsNewTask(false);
+          }} 
+          isNew={isNewTask}
+          onSave={(task) => {
+            setSelectedTask(task);
+            setIsNewTask(false);
+          }}
+        />
+      )}
     </div>
   );
 };

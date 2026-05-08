@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useTodo } from '../context/TodoContext';
-import TaskCard from '../components/TaskCard';
+import TaskCard from '../../components/TaskCard';
 import { FiSearch } from 'react-icons/fi';
-import api from '../api/axios';
+import api from '../../api/axios';
 
 const SearchPage = () => {
   const [query, setQuery] = useState('');

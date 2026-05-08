@@ -65,9 +65,12 @@ class AvatarUploadView(APIView):
     def post(self, request):
         user = request.user
         if 'avatar' in request.FILES:
+            # Avval eski avatarini o'chirish
+            if user.avatar:
+                user.avatar.delete()
             user.avatar = request.FILES['avatar']
             user.save()
-            return Response(UserSerializer(user).data)
+            return Response(UserSerializer(user, context={'request': request}).data)
         return Response({'error': 'No file provided'}, status=400)
 
 

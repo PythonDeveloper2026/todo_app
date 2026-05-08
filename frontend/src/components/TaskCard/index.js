@@ -3,7 +3,7 @@ import { useTodo } from '../../context/TodoContext';
 import { FiStar, FiCheck, FiCalendar } from 'react-icons/fi';
 import './styles.css';
 
-const TaskCard = ({ task, onClick }) => {
+const TaskCard = ({ task, onClick, selectable, selected, onSelect }) => {
   const { toggleComplete, toggleImportant } = useTodo();
 
   const priorityColors = {
@@ -15,8 +15,24 @@ const TaskCard = ({ task, onClick }) => {
 
   const isOverdue = task.due_date && new Date(task.due_date) < new Date() && !task.is_completed;
 
+  const handleSelect = (e) => {
+    e.stopPropagation();
+    if (onSelect) {
+      onSelect(task.id, !selected);
+    }
+  };
+
   return (
-    <div className={`task-card ${task.is_completed ? 'completed' : ''}`} onClick={() => onClick && onClick(task)}>
+    <div className={`task-card ${task.is_completed ? 'completed' : ''} ${selected ? 'selected' : ''}`} onClick={() => onClick && onClick(task)}>
+      {selectable && (
+        <div 
+          className={`select-checkbox ${selected ? 'checked' : ''}`}
+          onClick={handleSelect}
+        >
+          {selected && <FiCheck />}
+        </div>
+      )}
+      
       <div 
         className={`checkbox ${task.is_completed ? 'checked' : ''}`}
         onClick={(e) => {
@@ -24,7 +40,6 @@ const TaskCard = ({ task, onClick }) => {
           toggleComplete(task.id);
         }}
       >
-        {task.is_completed && <FiCheck />}
       </div>
       
       <div className="task-content">

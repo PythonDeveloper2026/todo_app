@@ -10,6 +10,7 @@ import TodayPage from './pages/TodayPage';
 import SearchPage from './pages/SearchPage';
 import ListDetailPage from './pages/ListDetailPage';
 import StatsPage from './pages/StatsPage';
+import SettingsPage from './pages/SettingsPage';
 import './index.css';
 
 const PrivateRoute = ({ children }) => {
@@ -50,6 +51,7 @@ const AppRoutes = () => {
                 <Route path="planned" element={<TodayPage title="Planned" type="upcoming" />} />
                 <Route path="search" element={<SearchPage />} />
                 <Route path="stats" element={<StatsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
                 <Route path="list/:id" element={<ListDetailPage />} />
               </Routes>
             </AppLayout>

@@ -12,6 +12,7 @@ export const TodoProvider = ({ children }) => {
   const [stats, setStats] = useState(null);
   const [activeList, setActiveList] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({ next: null, previous: null });
 
   const fetchLists = useCallback(async () => {
     const res = await api.get('/lists/');
@@ -23,6 +24,10 @@ export const TodoProvider = ({ children }) => {
     try {
       const res = await api.get('/tasks/', { params });
       setTasks(res.data.results || res.data);
+      setPagination({
+        next: res.data.next,
+        previous: res.data.previous,
+      });
     } finally {
       setLoading(false);
     }
@@ -34,8 +39,13 @@ export const TodoProvider = ({ children }) => {
   }, []);
 
   const fetchTags = useCallback(async () => {
-    const res = await api.get('/tags/');
-    setTags(res.data.results || res.data);
+    try {
+      const res = await api.get('/tags/');
+      console.log('Tags response:', res.data);
+      setTags(res.data.results || res.data);
+    } catch (err) {
+      console.error('Error fetching tags:', err);
+    }
   }, []);
 
   useEffect(() => {
@@ -67,9 +77,18 @@ export const TodoProvider = ({ children }) => {
   };
 
   const toggleComplete = async (id) => {
-    const res = await api.post(`/tasks/${id}/complete/`);
-    setTasks(prev => prev.map(t => t.id === id ? res.data : t));
-    fetchStats();
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    const newStatus = !task.is_completed;
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, is_completed: newStatus } : t));
+    try {
+      const res = await api.post(`/tasks/${id}/complete/`);
+      setTasks(prev => prev.map(t => t.id === id ? res.data : t));
+      fetchStats();
+    } catch (err) {
+      setTasks(prev => prev.map(t => t.id === id ? { ...t, is_completed: !newStatus } : t));
+      fetchStats();
+    }
   };
 
   const toggleImportant = async (id) => {
@@ -102,11 +121,12 @@ export const TodoProvider = ({ children }) => {
 
   return (
     <TodoContext.Provider value={{
-      lists, tasks, tags, stats, activeList, loading,
+      lists, tasks, tags, stats, activeList, loading, pagination,
       setActiveList, fetchTasks, fetchStats,
       createTask, updateTask, deleteTask,
       toggleComplete, toggleImportant, toggleMyDay,
       createList, updateList, deleteList,
+      setTags,
     }}>
       {children}
     </TodoContext.Provider>

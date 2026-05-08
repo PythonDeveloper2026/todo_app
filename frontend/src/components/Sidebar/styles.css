@@ -145,6 +145,13 @@
   border-radius: 50%;
 }
 
+.list-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+}
+
 .add-list-form {
   margin-bottom: 10px;
 }
@@ -152,6 +159,51 @@
 .list-input {
   margin-bottom: 0;
   padding: 8px 12px;
+}
+
+.list-item-wrapper {
+  position: relative;
+}
+
+.list-edit-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.list-item-wrapper:hover .list-edit-btn {
+  opacity: 1;
+}
+
+.list-edit-btn:hover {
+  color: var(--text-primary);
+}
+
+.tags-section {
+  margin-bottom: 20px;
+}
+
+.tags-header h4 {
+  margin: 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.tags-header button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
 }
 
 .sidebar-footer {

@@ -41,8 +41,10 @@ class TaskListCreateView(generics.ListCreateAPIView):
     - priority: 1-4
     - tag: tag ID
     - search: qidiruv so'zi
+    - page: sahifa raqami
     """
     serializer_class = TaskSerializer
+    pagination_class = None
     
     def get_queryset(self):
         qs = Task.objects.filter(user=self.request.user, parent_task=None)
@@ -67,6 +69,11 @@ class TaskListCreateView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+    
+    def get_serializer(self, *args, **kwargs):
+        if self.request.query_params.get('page'):
+            self.pagination_class = self.__class__.pagination_class
+        return super().get_serializer(*args, **kwargs)
 
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -296,6 +303,20 @@ class TagDetailView(generics.RetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return Tag.objects.filter(user=self.request.user)
+
+
+class TaskTagsView(APIView):
+    """Taskga tag qo'shish/o'chirish"""
+    def post(self, request, pk):
+        task = Task.objects.get(pk=pk, user=request.user)
+        tag_ids = request.data.get('tags', [])
+        
+        task.tags.clear()
+        for tag_id in tag_ids:
+            tag = Tag.objects.get(id=tag_id, user=request.user)
+            task.tags.add(tag)
+        
+        return Response(TaskSerializer(task).data)
 
 
 class ReorderListsView(APIView):

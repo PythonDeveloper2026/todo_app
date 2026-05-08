@@ -17,26 +17,38 @@
 }
 
 .checkbox {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
   border-radius: 50%;
-  border: 2px solid var(--text-secondary);
+  border: 2.5px solid #9ca3af;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
-  color: transparent;
+  transition: all 0.2s ease;
+  background: white;
 }
 
 .checkbox:hover {
-  border-color: var(--accent);
+  border-color: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
 }
 
 .checkbox.checked {
-  background-color: var(--success);
-  border-color: var(--success);
+  background: #22c55e;
+  border-color: #22c55e;
+}
+
+.checkbox.checked::after {
+  content: '✓';
+  font-size: 14px;
+  font-weight: bold;
   color: white;
+}
+
+.task-card.completed .checkbox {
+  border-color: #22c55e;
 }
 
 .task-content {
@@ -80,4 +92,32 @@
 
 .star-btn.active {
   color: var(--warning);
+}
+
+.select-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 2px solid var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: transparent;
+}
+
+.select-checkbox:hover {
+  border-color: var(--accent);
+}
+
+.select-checkbox.checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.task-card.selected {
+  border-color: var(--accent);
+  background-color: rgba(99, 102, 241, 0.1);
 }

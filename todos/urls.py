@@ -1,7 +1,25 @@
 from django.urls import path
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from . import views
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_root(request):
+    return Response({
+        'message': 'Todo API',
+        'endpoints': {
+            'lists': '/api/lists/',
+            'tasks': '/api/tasks/',
+            'tags': '/api/tags/',
+            'stats': '/api/stats/',
+            'search': '/api/search/',
+        }
+    })
+
 urlpatterns = [
+    path('', api_root, name='api-root'),
     # Lists
     path('lists/', views.TodoListView.as_view(), name='lists'),
     path('lists/<int:pk>/', views.TodoListDetailView.as_view(), name='list-detail'),
@@ -28,6 +46,7 @@ urlpatterns = [
     # Tags
     path('tags/', views.TagListCreateView.as_view(), name='tags'),
     path('tags/<int:pk>/', views.TagDetailView.as_view(), name='tag-detail'),
+    path('tasks/<int:pk>/tags/', views.TaskTagsView.as_view(), name='task-tags'),
     
     # Special views
     path('tasks/today/', views.TodayTasksView.as_view(), name='today-tasks'),
