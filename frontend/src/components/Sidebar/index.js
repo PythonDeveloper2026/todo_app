@@ -80,7 +80,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <FiMenu size={24} />
       </button>
       <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-        <div className="user-profile">
+        <div className="user-profile" onClick={() => navigate('/app/settings')} style={{ cursor: 'pointer' }}>
           <div className="avatar">
             {user?.avatar_url ? <img src={user.avatar_url} alt="avatar" /> : <span>{user?.username?.[0]?.toUpperCase()}</span>}
           </div>
